@@ -1,0 +1,1064 @@
+Lab 1
+
+
+1)
+pwd: Print Working Directory
+Shows the current directory. Output might be /home/user/docs.
+
+
+
+cd: Change Directory
+cd /path/to/directory
+cd /home/user/docs changes the current directory to /home/user/docs.
+
+
+
+ls: List Subdirectories and Files
+ls
+ls lists all files and directories in the current directory. Output might include sample, doc1, notes.
+
+
+
+touch: Create a File
+touch newfile
+touch newfile creates a new empty file named newfile.
+
+
+
+file: Determine File Type
+file sample
+file sample outputs something like sample: ASCII text, indicating it's a text file.
+
+
+
+cat: Display File Contents
+
+cat sample
+cat sample shows the contents of the sample file:
+kotlin
+Copy code
+hello world
+this is a test file
+we are learning Unix commands
+
+
+
+head: Display First Lines of a File
+head sample
+head sample shows the first 10 lines (default) of the file. Since our file has fewer lines, it displays all:
+kotlin
+Copy code
+hello world
+this is a test file
+we are learning Unix commands
+
+
+
+tail: Display Last Lines of a File
+tail sample
+tail sample shows the last 10 lines (default) of the file. For our file, it displays:
+kotlin
+Copy code
+hello world
+this is a test file
+we are learning Unix commands
+
+
+
+cp: Copy a File
+cp sample copy_of_sample
+cp sample copy_of_sample creates a copy of sample named copy_of_sample.
+
+
+
+mv: Move or Rename a File
+mv sample newname
+mv sample newname renames sample to newname.
+
+
+
+rm: Remove/Delete a File
+rm sample
+rm sample deletes the sample file.
+
+
+
+mkdir: Make Directory
+mkdir newdir
+mkdir newdir creates a new directory named newdir.
+
+
+
+rmdir: Remove Directory
+rmdir newdir
+rmdir newdir deletes the empty directory named newdir.
+
+
+which: Find Location of a Command
+which ls
+which ls might return /bin/ls, showing where the ls command is located.
+
+
+
+whereis: Locate Program, Source Code, and Manual
+whereis ls
+whereis ls might return ls: /bin/ls /usr/share/man/man1/ls.1.gz, showing the location of the ls command and its manual page.
+
+
+locate: Find Files
+locate sample
+locate sample finds all paths containing the filename sample, such as /home/user/docs/sample.
+
+
+find: Search for Files with Parameters
+find . -name "sample"
+find . -name "sample" searches for files named sample in the current directory and its subdirectories.
+
+
+
+|: Pipe
+cat sample | grep "test"
+cat sample | grep "test" takes the output of cat sample and searches for the word "test". It might return:
+this is a test file
+
+
+
+<<: Here Document (Heredoc)
+Example:
+cat << END_TEXT
+hello
+world
+END_TEXT
+
+This outputs:
+Copy code
+hello
+world
+
+
+
+tr: Translate or Delete Characters
+cat sample | tr a-z A-Z
+converts all lowercase letters to uppercase. The output would be:
+HELLO WORLD
+THIS IS A TEST FILE
+WE ARE LEARNING UNIX COMMANDS
+
+
+
+
+2)
+cat - cat FirstFile >> newfile.txt:
+Appends the contents of FirstFile to the end of newfile.txt. If newfile.txt doesn’t exist, it will be created.
+
+
+
+head -n3 FirstFile:
+Displays the first 3 lines of FirstFile.
+Alternative:
+head -c[n] can be used to display the first n bytes of the file. 
+
+
+
+tail -n3 FirstFile:
+Displays the last 3 lines of FirstFile.
+Alternative: tail -c[n] can be used to display the last n bytes of the file.
+
+
+
+cp file1.txt file2.txt
+Copies file1.txt to file2.txt.
+
+-n (No Overwrite): cp -n file1.txt file2.txt
+If file2.txt exists, it will not be overwritten.
+
+-i (Interactive): cp -i file1.txt file2.txt
+Prompts you for confirmation before overwriting file2.txt if it exists.
+
+-f (Force): cp -f file1.txt file2.txt
+Forces the copy operation and overwrites file2.txt without prompting.
+
+
+
+mv file1.txt file2.txt
+Moves or renames file1.txt to file2.txt.
+
+-f (Force): mv -f file1.txt file2.txt
+Forces the move operation and overwrites file2.txt if it exists without prompting.
+
+-i (Interactive): mv -i file1.txt file2.txt
+Prompts you for confirmation before overwriting file2.txt if it exists.
+
+
+
+rm file1.txt
+Deletes file1.txt.
+
+-r (Recursive): rm -r directory
+Deletes directory and all of its contents recursively.
+
+-f (Force): rm -f file1.txt
+Forces the removal of file1.txt without prompting, even if it does not exist.
+
+-i (Interactive): rm -i file1.txt
+Prompts for confirmation before deleting file1.txt.
+
+
+
+rmdir directory
+Removes the empty directory named directory.
+
+-r (Recursive): rmdir -r directory
+(If supported) Removes directory and its contents recursively.
+
+-f (Force): rmdir -f directory
+(If supported) Forces removal of directory without prompting.
+
+
+
+find Command Examples
+-name [pattern]: find . -name "*.txt"
+Searches for files with the .txt extension in the current directory and subdirectories.
+
+-type [type]: find . -type f
+Searches for all regular files in the current directory and subdirectories.
+
+
+
+3)
+ls *.txt:
+Output:
+document1.txt
+report.txt
+notes.txt
+
+Lists all .txt files in the current directory.
+
+
+
+ls *[0-9]* or ls *[123]*:
+ls *[0-9]*
+Output:
+file1.txt
+data123.csv
+Lists files containing at least one digit.
+
+ls *[123]*
+Output:
+file1.txt
+data123.csv
+Lists files containing the digits 1, 2, or 3.
+
+
+
+ls ????*:
+Output:
+file1.txt
+data123.csv
+notes2024.docx
+Lists files where the names have at least 4 characters.
+
+
+
+ls -- [!aeiouAEIOU]*:
+Output:
+file1.txt
+notes2024.docx
+report.txt
+Lists files whose names do not start with a vowel.
+
+
+---------------------------------------------------------------------------------------------------------------
+
+Lab 2
+
+
+1)
+grep is used to search for patterns in files.
+
+Basic search:
+grep apple fruitlist.txt
+Output:
+apple
+apples
+pineapple
+fruit-apple
+
+
+Search for lines starting with a pattern:
+grep ^p fruitlist.txt
+Output:
+pineapple
+pear
+peach
+
+
+Search for lines without the pattern:
+grep -v apple fruitlist.txt
+Output:
+banana
+pear
+peach
+orange
+
+
+
+Sort alphabetically:
+sort fruitlist.txt
+Output:
+apple
+apples
+banana
+fruit-apple
+orange
+peach
+pear
+pineapple
+
+
+Sort numerically:
+sort -n numbers.txt
+Output: 
+1
+12
+100
+1200
+
+
+
+wc
+Word count:
+wc fruitlist.txt
+Output:
+9  9  53 fruitlist.txt
+9: The number of lines in the file (fruitlist.txt).
+9: The number of words in the file.
+53: The number of characters
+
+
+ 
+cut
+cut extracts specific columns from a file.
+
+Extract characters:
+cut -c1-3 fruitlist.txt
+Output:
+app
+app
+pin
+fru
+ban
+pea
+pea
+ora
+
+
+
+sed
+sed performs text transformations.
+
+Replace text:
+sed 's/apple/orange/' fruitlist.txt
+Output:
+orange
+oranges
+pineapple
+fruit-orange
+banana
+pear
+peach
+orange
+
+
+
+tr
+tr translates or deletes characters.
+
+Translate lowercase to uppercase:
+tr '[a-z]' '[A-Z]' < fruitlist.txt
+Output:
+APPLE
+APPLES
+PINEAPPLE
+FRUIT-APPLE
+BANANA
+PEAR
+PEACH
+ORANGE
+
+
+
+Process Management Commands
+ps
+ps displays currently running processes.
+
+Check processes:
+ps
+Output:
+PID TTY           TIME CMD
+7431 pts/0    00:00:00 su
+7434 pts/0    00:00:00 bash
+18585 pts/0   00:00:00 ps
+
+
+
+kill Command
+Sending a SIGTERM Signal
+$ kill 1234
+Expected Output:
+There is no output if the command is successful. The process with PID 1234 will receive a SIGTERM signal, allowing it to perform clean-up and terminate gracefully.
+
+Sending a SIGKILL Signal
+$ kill -9 1234
+Expected Output:
+There is no output if the command is successful. The process with PID 1234 will be terminated immediately without any chance for clean-up.
+
+
+
+
+File permission commands 
+chmod a+r Comments.txt
+Explanation: This command adds read (r) permission for all users (user, group, others) on the file Comments.txt.
+Before:
+-rw-r----- 1 user group 0 Aug 14 10:00 Comments.txt
+After:
+-r--r--r-- 1 user group 0 Aug 14 10:00 Comments.txt
+
+chmod +r Comments.txt
+Explanation: This command adds read (r) permission for all classes, but the actual change depends on the current umask.
+Before:
+-rw-r----- 1 user group 0 Aug 14 10:00 Comments.txt
+After:
+-r--r--r-- 1 user group 0 Aug 14 10:00 Comments.txt
+
+chmod a-x Comments.txt
+Explanation: This command removes the execute (x) permission for all users (user, group, others) on the file Comments.txt.
+Before:
+-rwxr-xr-x 1 user group 0 Aug 14 10:00 Comments.txt
+After:
+-rw-r--r-- 1 user group 0 Aug 14 10:00 Comments.txt
+
+chmod a+rx viewer.sh
+Explanation: This command adds both read (r) and execute (x) permissions for all users (user, group, others) on the script viewer.sh.
+Before:
+-rw-r----- 1 user group 0 Aug 14 10:00 viewer.sh
+After:
+-r-xr-xr-x 1 user group 0 Aug 14 10:00 viewer.sh
+
+chmod u=rw,g=r,o= Plan.txt
+Explanation: This command sets read and write (rw) permissions for the user (owner), read (r) permission for the group, and no permissions for others on the file Plan.txt.
+Before:
+-rwxr-xr-x 1 user group 0 Aug 14 10:00 Plan.txt
+After:
+-rw-r----- 1 user group 0 Aug 14 10:00 Plan.txt
+
+chmod -R u+w,go-w docs
+Explanation: This command recursively adds write (w) permission to the user (owner) and removes write (w) permission for the group and others in the directory docs and all its contents.
+Before:
+drwxrwxrwx 1 user group 0 Aug 14 10:00 docs/
+After:
+drwxr-xr-x 1 user group 0 Aug 14 10:00 docs/
+
+chmod ug=rw groupAgreements.txt
+Explanation: This command sets read and write (rw) permissions for the user (owner) and group, with no permissions for others on the file groupAgreements.txt.
+Before:
+-rwxr-xr-x 1 user group 0 Aug 14 10:00 groupAgreements.txt
+After:
+-rw-rw---- 1 user group 0 Aug 14 10:00 groupAgreements.txt
+
+chmod 664 global.txt
+Explanation: This command sets read and write (rw) permissions for the user (owner) and group, and read-only (r) permission for others on the file global.txt.
+Before:
+-rwxrwxrwx 1 user group 0 Aug 14 10:00 global.txt
+After:
+-rw-rw-r-- 1 user group 0 Aug 14 10:00 global.txt
+
+chmod 0744 myCV.txt
+Explanation: This command sets read, write, and execute (rwx) permissions for the user (owner), and read-only (r) permission for the group and others on the file myCV.txt. The leading 0 indicates no special modes are applied.
+Before:
+-rw-rw-rw- 1 user group 0 Aug 14 10:00 myCV.txt
+After:
+-rwxr--r-- 1 user group 0 Aug 14 10:00 myCV.txt
+
+
+
+echo Command
+Displaying Text
+$ echo "this is OS lab manual"
+Expected Output:
+this is OS lab manual
+
+
+
+bc Command
+Performing Basic Calculations
+$ bc
+5 + 2
+Expected Output:
+7
+
+Performing Integer Division
+$ bc
+5 / 2
+Expected Output:
+2
+
+Performing Floating Point Operations
+$ bc -l
+5 / 2
+Expected Output:
+2.50000000000000000000
+The -l option enables floating-point arithmetic.
+
+
+
+vi myfile.txt
+Output:
+This command opens the vi editor and creates or edits a file named myfile.txt.
+The screen shows 25 lines with ~ symbols on empty lines.
+
+Opening a file at a specific line: 
+vi +n <filename>
+Command:
+vi +5 myfile.txt
+Output:
+Opens the file myfile.txt and places the cursor at line 5.
+
+Opening a file in read-only mode: 
+Command:
+vi -R myfile.txt
+Output:
+Opens the file myfile.txt in read-only mode.
+You can view and navigate the file, but editing is disabled. If you try to make changes, vi will display a warning.
+
+Saving a file: 
+<ESC> :w
+Make some changes in the file while in Insert mode.
+Press <ESC> to enter Command mode.
+Type :w and press Enter.
+Output:
+The changes are saved, and the message myfile.txt [New] or myfile.txt [Modified] will appear at the bottom of the screen.
+
+Quitting without saving:
+<ESC> :q!
+Output:
+The vi editor closes immediately, discarding any unsaved changes.
+
+Saving and quitting: 
+<ESC> :wq
+Output:
+The file is saved, and the vi editor closes, returning you to the command prompt.
+
+Saving and quitting (alternative command): <ESC> :x
+Output:
+The file is saved, and the vi editor closes, similar to the :wq command.
+
+
+
+
+2)
+grep Commands
+
+
+Select lines with exactly two characters:
+grep -x '.\{2\}' filename.txt
+Explanation: -x ensures that the whole line is matched, and .\{2\} matches exactly two characters.
+echo -e "a\nab\nabc" > sample.txt
+This command creates a file named sample.txt with the following content:
+a
+ab
+abc
+grep -x '.\{2\}' sample.txt
+Expected Output:
+ab
+
+
+
+Select lines that start with an uppercase letter:
+grep '^[A-Z]' filename.txt
+^ asserts the start of a line, and [A-Z] matches any uppercase letter.
+Example Execution:
+echo -e "Hello\nworld\nApple\nbanana" > sample.txt
+grep '^[A-Z]' sample.txt
+Expected Output:
+Hello
+Apple
+
+
+
+Select lines that end with a period:
+grep '\.$' filename.txt
+Explanation: \. matches a literal period, and $ asserts the end of a line.
+Example Execution:
+echo -e "This is a sentence.\nNo period\nAnother line." > sample.txt
+grep '\.$' sample.txt
+Expected Output:
+This is a sentence.
+Another line.
+
+
+
+Select lines with one or more blank spaces:
+grep ' ' filename.txt
+The space character (' ') matches one or more spaces.
+Example Execution:
+echo -e "Hello world\nNoSpacesHere\nThis is a test" > sample.txt
+grep ' ' sample.txt
+Expected Output:
+Hello world
+This is a test
+
+
+
+Select lines with digits and direct them to another file:
+grep '[0-9]' filename.txt > output.txt
+Explanation: [0-9] matches any digit, and > redirects the output to another file.
+Example Execution:
+echo -e "Hello1\nworld\n2024 is coming" > sample.txt
+grep '[0-9]' sample.txt > output.txt
+cat output.txt
+Expected Output in output.txt:
+Hello1
+2025 is coming
+
+
+
+
+3)
+Start vi editor and insert the following content:
+
+RegistrationNo:Name:Department:Branch:Section:Sub1:Sub2:Sub3
+1234:XYZ:ICT:CCE:A:80:60:70
+5678:ABC:ICT:CCE:B:75:65:85
+9101:DEF:IT:CSE:A:82:70:78
+1213:GHI:IT:CSE:B:68:74:76
+1415:JKL:ICT:CCE:C:90:88:85
+1617:MNO:IT:CSE:C:77:81:79
+1819:PQR:ICT:CCE:A:85:79:88
+2021:STU:IT:CSE:B:73:68:70
+2223:VWX:ICT:CCE:C:89:82:84
+2425:YZ:IT:CSE:A:76:67:69
+
+
+Count students in the ICT department:
+grep -c 'ICT' studentInformation.txt
+Expected Output:
+5
+
+
+Replace all occurrences of "IT" with "Information Technology":
+sed 's/IT/Information Technology/g' studentInformation.txt > ITStudents.txt
+Expected Output in ITStudents.txt:
+9101:DEF:Information Technology:CSE:A:82:70:78
+1213:GHI:Information Technology:CSE:B:68:74:76
+1617:MNO:Information Technology:CSE:C:77:81:79
+2021:STU:Information Technology:CSE:B:73:68:70
+2425:YZ:Information Technology:CSE:A:76:67:69
+
+
+Display the average marks for a specific student (e.g., Registration No: 1234):
+awk -F ':' '$1=="1234"{print ($6+$7+$8)/3}' studentInformation.txt
+Expected Output:
+70
+
+
+
+Display the title row in uppercase:
+sed '1s/.*/\U&/' studentInformation.txt
+Expected Output:
+REGISTRATIONNO:NAME:DEPARTMENT:BRANCH:SECTION:SUB1:SUB2:SUB3
+1234:XYZ:ICT:CCE:A:80:60:70
+5678:ABC:ICT:CCE:B:75:65:85
+9101:DEF:IT:CSE:A:82:70:78
+1213:GHI:IT:CSE:B:68:74:76
+1415:JKL:ICT:CCE:C:90:88:85
+1617:MNO:IT:CSE:C:77:81:79
+1819:PQR:ICT:CCE:A:85:79:88
+2021:STU:IT:CSE:B:73:68:70
+2223:VWX:ICT:CCE:C:89:82:84
+2425:YZ:IT:CSE:A:76:67:69
+
+
+
+
+4)
+Suppose you have a directory with the following files:
+
+file1.txt:
+MIT is a great institute.
+I want to study at MIT.
+
+file2.txt:
+Welcome to MIT.
+MIT has a beautiful campus.
+
+file3.txt:
+This file does not mention the acronym.
+
+
+Command:
+grep -rl 'MIT' . | xargs sed -i 's/MIT/Manipal Institute of Technology/g'
+
+
+After running the command, the files will be modified as follows:
+
+file1.txt:
+Manipal Institute of Technology is a great institute.
+I want to study at Manipal Institute of Technology.
+
+file2.txt:
+Welcome to Manipal Institute of Technology.
+Manipal Institute of Technology has a beautiful campus.
+
+file3.txt:
+This file does not mention the acronym.
+
+
+
+
+5)
+Command:
+find . -type f -name '*[0-9]*' -exec wc {} +
+Output:
+The output will be a list where each line contains:
+Number of lines
+Number of words
+Number of characters
+File name
+  123  456 7890 filename1.txt
+  234  567 8901 filename2.txt
+123: Number of lines in filename1.txt
+456: Number of words in filename1.txt
+7890: Number of characters in filename1.txt
+filename1.txt: The file name
+
+
+
+
+6)
+Run wc command in the background and kill all wc processes:
+
+You can use the & operator to run each wc command in the background. 
+wc file1.txt &
+wc file2.txt &
+wc file3.txt &
+
+
+Verify Background Jobs
+jobs
+[1]   12345   wc file1.txt &
+[2]   12346   wc file2.txt &
+[3]   12347   wc file3.txt &
+
+
+Kill All wc Processes
+pkill wc
+
+Alternatively, you can use killall to achieve the same:
+killall wc
+
+--------------------------------------------------------------------------------------------------------------------------
+
+Lab 3
+
+
+1)
+#!/bin/bash
+PASSED=$1
+if [ -d "${PASSED}" ] ; then
+    echo "$PASSED is a directory";
+else
+    if [ -f "${PASSED}" ]; then
+        echo "${PASSED} is a file";
+    else
+        echo "${PASSED} is not valid";
+        exit 1
+    fi
+fi
+Expected Output:
+
+If PASSED is a directory: "$PASSED is a directory"
+If PASSED is a file: "$PASSED is a file"
+If PASSED is neither: "$PASSED is not valid"
+
+
+
+
+2)
+#!/bin/bash
+
+echo "Enter the pattern"
+read pattern
+echo "Enter the location"
+read location
+
+echo `grep -L $pattern $location`
+if pattern is abc and location is /home/user/docs, and files file1.txt and file2.txt contain abc, the output would be:
+/home/user/docs/file1.txt
+/home/user/docs/file2.txt
+
+
+
+
+3)
+#!/bin/bash 
+echo "Replacing .txt -> .text"
+result=`find . -depth -name *.txt`
+for i in $result 
+do
+    mv $i ${i%.txt}.text
+done
+Replacing .txt -> .text
+
+
+
+
+4)
+#!/bin/bash
+echo "Gross = Basics + TA + 10% of Basics"
+echo "Enter Basics:"
+read basics
+echo "Enter TA"
+read TA
+echo `echo "$basics*1.1 + $TA" | bc -l ` #Using Piping
+echo `bc -l <<< "$basics*1.1 + $TA"`     #Using Streams
+Enter Basics:
+5000
+Enter TA
+1000
+Gross Salary: 6500.00
+
+
+
+
+
+5)
+#!/bin/bash
+#Shell Script to copy all files of a particular extension to a user-provided folder
+extension=$1
+folder=$2
+result=`find ./ -maxdepth 1 -name *$extension`
+mkdir $folder
+for i in $result
+do
+    mv $i $folder
+done
+
+./script.sh .txt my_folder
+Suppose the current directory contains:
+file1.txt
+file2.txt
+file3.pdf
+file4.doc
+
+my_folder is created if it does not already exist.
+
+file1.txt and file2.txt are moved to my_folder.
+file3.pdf and file4.doc remain in the current directory.
+
+
+
+
+6)
+#!/bin/bash
+
+# Program to replace all "ex:" with "Example:"
+sed -i -e 's/^ex:/Example:/' *.txt       #Replace the ex: in beginning of lines
+sed -i -e 's/\. ex:/\. Example:/' *.txt  #Replace the ex: occuring after .
+ 
+Consider a file named example.txt with the following content:
+ex: This is an example line.
+Another line.
+Something else ex: that needs replacing.
+Another line with an ex: in the middle.
+End ex: of file.
+
+After running your script, example.txt would be transformed to:
+Example: This is an example line.
+Another line.
+Something else Example: that needs replacing.
+Another line with an Example: in the middle.
+End Example: of file.
+
+
+
+
+7)
+#!/bin/bash
+
+sed -i '2~2d' $1
+Line 1
+Line 2
+Line 3
+Line 4
+After running the script, sample.txt will contain:
+Line 1
+Line 3
+
+
+---------------------------------------------------------------------------------------------------------------------------
+
+Lab 4
+
+1)
+#!/bin/bash
+cp $1 copy-$1
+
+./script.sh example.txt
+Before Running the Script:
+File example.txt exists.
+
+After Running the Script:
+A new file named copy-example.txt is created.
+copy-example.txt is an exact copy of example.txt.
+
+
+
+
+2)
+#!/bin/bash
+
+n=$#
+if [ $n -eq 0 ]; then
+    echo "No files provided"
+    exit 1
+fi
+rm -i $*
+
+./delete_files.sh file1.txt file2.txt
+Output:
+rm: remove regular empty file 'file1.txt'? y
+rm: remove regular empty file 'file2.txt'? y
+
+
+
+
+3)
+#!/bin/bash 
+#Script to sort strings
+
+n=$#
+s=($*)
+echo "Array Before Sorting: "${s[*]}
+for ((i=0;i<$n;i++))
+do
+    for ((j=1;j<n-i-1;j++))
+    do
+        echo $j
+        if [[ ${s[j]} > ${s[$((j+1))]} ]]
+        then
+            temp=${s[j]}
+            s[j]=${s[$((j+1))]}
+            s[$((j+1))]=$temp
+        fi
+    done
+done
+echo "Array after sorting: "${s[*]}
+
+./sort_strings.sh zebra apple orange banana grape
+
+Expected Output:
+Array Before Sorting: zebra apple orange banana grape
+Array After Sorting: apple banana grape orange zebra
+
+
+
+
+4)
+#!/bin/bash
+
+#Wordcount Script
+
+case $1 in
+	-linecount)
+            wc "$2" -l;;
+	-wordcount)
+			wc "$2" -w;;
+	-charcount)
+			wc "$2" -c;;
+	*);;
+esac
+
+Assume you have a file named example.txt. To count the lines in example.txt, run:
+./wordcount_script.sh -linecount example.txt
+Output:
+42 example.txt
+
+To count the words in example.txt, run:
+./wordcount_script.sh -wordcount example.txt
+Output:
+123 example.txt
+
+To count the characters in example.txt, run:
+./wordcount_script.sh -charcount example.txt
+Output:
+4567 example.txt
+
+
+
+
+5)
+#!/bin/bash
+
+# Menu driven shell script
+where=$1
+shift       #Rotates parameters counter-clockwise
+patterns=$1
+for ((value=2; value<=$#; value++))
+do
+    patterns+="\|${!value}"
+done
+
+while (true)
+do
+    echo "1. Search the patterns within the file"
+    echo "2. Delete the patterns from the file"
+    echo "3. Exit"
+    read choice
+    case $choice in
+        1) grep -i $patterns $where ;;
+        2) for i
+           do   
+               sed -e s/$i//g $where > text.txt
+               mv text.txt $where
+           done;;
+        3) exit 0;;
+    esac
+done
+
+Create a sample text file:
+echo -e "This is an example file.\nIt contains some text patterns.\nExample patterns include example and text." > sample.txt
+
+sample.txt content:
+This is an example file.
+It contains some text patterns.
+Example patterns include example and text.
+
+Run the script with sample patterns:
+./menu_script.sh sample.txt example text
+
+When you run the script, you will see the following menu:
+1. Search the patterns within the file
+2. Delete the patterns from the file
+3. Exit
+
+Option 1: Search the Patterns
+1
+Output:
+This is an example file.
+Example patterns include example and text.
+
+Option 2: Delete the Patterns
+2
+The script will process the file and remove occurrences of example and text.
+This is an file.
+It contains some patterns.
+patterns include  and .
+
+Option 3: Exit
+3
+The script exits and returns to the command line.
+
+
+-----------------------------------------------------------------------------------------------
+

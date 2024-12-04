@@ -1,0 +1,1230 @@
+Lab 5
+
+1)
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+
+int main() {
+    pid_t pid;
+    pid = fork();
+
+    if (pid < 0) {
+        printf("Child process creation failed\n");
+    } 
+    else if (pid > 0) {
+        // This is the parent process
+        printf("In parent process\n");
+        printf("PID : %d \n", getpid());
+        printf("Parent's PID : %d \n", getppid());
+    } 
+    else {
+        // This is the child process
+        printf("In child process\n");
+        printf("PID : %d \n", getpid());
+        printf("Parent's PID: %d \n", getppid());
+    }
+
+    return 0;
+}
+
+
+In parent process
+PID : 12345 
+Parent's PID : 6789 
+
+In child process
+PID : 12346 
+Parent's PID: 12345
+
+........................................................................
+
+2)
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main() {
+    char a[5][20], temp[20];
+    int i, j, status;
+
+    // Input for 5 strings
+    printf("Enter 5 strings:\n");
+    for (i = 0; i < 5; i++)
+        scanf("%s", a[i]);
+
+    pid_t pid;
+    pid = fork();
+
+    if (pid == 0) {
+        // Child process - performs sorting
+        printf("In child process\n");
+
+        // Bubble sort the strings in lexicographical order
+        for (i = 0; i < 4; i++) {
+            for (j = 0; j < 4 - i; j++) {
+                if (strcmp(a[j], a[j + 1]) > 0) {
+                    strcpy(temp, a[j]);
+                    strcpy(a[j], a[j + 1]);
+                    strcpy(a[j + 1], temp);
+                }
+            }
+        }
+
+        // Print the sorted list in the child process
+        printf("The list in sorted order is:\n");
+        for (i = 0; i < 5; i++)
+            puts(a[i]);
+
+    } else if (pid > 0) {
+        // Parent process - waits for child to complete
+        printf("In parent process\n");
+
+        // Print the unsorted list before waiting for the child process to finish
+        printf("The list in unsorted order is:\n");
+        for (i = 0; i < 5; i++)
+            puts(a[i]);
+
+        // Wait for the child to finish
+        wait(&status);
+
+        if (WIFEXITED(status))
+            printf("Child process completed.\n");
+    } else {
+        // Fork failed
+        printf("Fork failed.\n");
+    }
+
+    return 0;
+}
+
+Enter 5 strings:
+zebra apple mango banana cherry
+In parent process
+The list in unsorted order is:
+zebra
+apple
+mango
+banana
+cherry
+In child process
+The list in sorted order is:
+apple
+banana
+cherry
+mango
+zebra
+Child process completed.
+
+//taking input as command line argument
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main(int argc, char *argv[]) //argc represents the number of command-line arguments, and argv[] is an array of strings containing those arguments.
+{
+    char temp[20];
+    int i, j, status;
+
+    // Ensure that exactly 5 strings are passed as arguments
+    if (argc != 6) {
+        printf("Please enter 5 strings as command-line arguments.\n");
+        return 1; // Exit if there are not 5 strings
+    }
+
+    pid_t pid;
+    pid = fork();
+
+    if (pid == 0) {
+        // Child process - performs sorting
+        printf("In child process\n");
+
+        // Bubble sort the strings in lexicographical order
+        for (i = 1; i < 5; i++) {
+            for (j = 1; j < 5 - (i - 1); j++) {
+                if (strcmp(argv[j], argv[j + 1]) > 0) {
+                    strcpy(temp, argv[j]);
+                    strcpy(argv[j], argv[j + 1]);
+                    strcpy(argv[j + 1], temp);
+                }
+            }
+        }
+
+        // Print the sorted list in the child process
+        printf("The list in sorted order is:\n");
+        for (i = 1; i < 6; i++)
+            puts(argv[i]);
+
+    } else if (pid > 0) {
+        // Parent process - waits for child to complete
+        printf("In parent process\n");
+
+        // Print the unsorted list before waiting for the child process to finish
+        printf("The list in unsorted order is:\n");
+        for (i = 1; i < 6; i++)
+            puts(argv[i]);
+
+        // Wait for the child to finish
+        wait(&status);
+
+        if (WIFEXITED(status))
+            printf("Child process completed.\n");
+    } else {
+        // Fork failed
+        printf("Fork failed.\n");
+    }
+
+    return 0;
+}
+
+.........................................................................
+
+3)
+#include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main() {
+    int i, j, status, n, s;
+    
+    // Input the number of strings
+    printf("Enter the number of strings: ");
+    scanf("%d", &n);
+    
+    char a[n][20], temp[20], sm[20];
+    
+    // Input the strings
+    printf("Enter the strings:\n");
+    for(i = 0; i < n; i++)
+        scanf("%s", a[i]);
+    
+    pid_t pid1, pid2;
+    
+    pid1 = fork();  // Create the first child process
+    
+    if(pid1 == 0) {
+        // First child process: performs bubble sort
+        printf("In child process (Bubble Sort)\n");
+        for(i = 0; i < n - 1; i++) {
+            for(j = 0; j < n - i - 1; j++) {
+                if(strcmp(a[j], a[j + 1]) > 0) {
+                    strcpy(temp, a[j]);
+                    strcpy(a[j], a[j + 1]);
+                    strcpy(a[j + 1], temp);
+                }
+            }
+        }
+        
+        // Print the sorted list
+        printf("The list in sorted order (Bubble Sort) is:\n");
+        for(i = 0; i < n; i++)
+            puts(a[i]);
+        
+        return 0;  // Exit the child process after sorting
+    } 
+    
+    // Parent process waits for the first child
+    wait(&status);
+    
+    if(pid1 > 0) {
+        pid2 = fork();  // Create the second child process
+        
+        if(pid2 == 0) {
+            // Second child process: performs selection sort
+            printf("In child process (Selection Sort)\n");
+            for(i = 0; i < n - 1; i++) {
+                s = i;
+                strcpy(sm, a[i]);
+                for(j = i + 1; j < n; j++) {
+                    if(strcmp(sm, a[j]) > 0) {
+                        strcpy(sm, a[j]);
+                        s = j;
+                    }
+                }
+                // Swap the smallest found string with the current position
+                strcpy(a[s], a[i]);
+                strcpy(a[i], sm);
+            }
+            
+            // Print the sorted list
+            printf("The list in sorted order (Selection Sort) is:\n");
+            for(i = 0; i < n; i++)
+                puts(a[i]);
+            
+            return 0;  // Exit the second child process after sorting
+        } 
+        
+        // Parent process waits for the second child
+        wait(&status);
+        
+        if(WIFEXITED(status))
+            printf("Child processes completed.\n");
+        
+        // Parent prints the original unsorted list
+        printf("In parent process\n");
+        printf("The list in original (unsorted) order is:\n");
+        for(i = 0; i < n; i++)
+            puts(a[i]);
+    }
+    
+    return 0;
+}
+
+Enter the number of strings: 5
+Enter the strings:
+banana
+apple
+cherry
+date
+grape
+
+In child process (Bubble Sort)
+The list in sorted order (Bubble Sort) is:
+apple
+banana
+cherry
+date
+grape
+
+In child process (Selection Sort)
+The list in sorted order (Selection Sort) is:
+apple
+banana
+cherry
+date
+grape
+
+Child processes completed.
+In parent process
+The list in original (unsorted) order is:
+banana
+apple
+cherry
+date
+grape
+.........................................................................
+
+Lab 6
+
+1)
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+
+typedef struct {
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int rem_time;
+    int priority;
+} Process;
+
+Process* Entry() {
+    printf("No. of Processes: ");
+    int n;
+    scanf("%d", &n);
+    
+    Process* p = (Process*) malloc((n + 1) * sizeof(Process)); // corrected memory allocation
+    printf("Enter PID, Arrival Time, Burst Time, Priority\n");
+    
+    for (int i = 0; i < n; i++) {
+        printf("Process %d: ", i + 1);
+        scanf("%d %d %d %d", &p[i].pid, &p[i].arrival_time, &p[i].burst_time, &p[i].priority);
+        p[i].rem_time = p[i].burst_time; // Initialize remaining time
+    }
+    p[n].pid = -1; // Terminator to signify end of array
+    return p;
+}
+
+int min(Process* p, int n, int timer) {
+    int min_time = 9999;
+    int min = -1;
+    
+    for (int i = 0; i < n; i++) {
+        if (p[i].arrival_time <= timer && p[i].rem_time > 0 && p[i].burst_time < min_time) {
+            min_time = p[i].burst_time;
+            min = i;
+        }
+    }
+    return min;
+}
+
+void SJF() {
+    Process* p = Entry();
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+    
+    int timer = 0;
+    float TAT = 0;
+    float WAT = 0;
+    int done = 0;
+    
+    while (done != n) 
+    {
+        int i = min(p, n, timer);
+        int start = timer;
+        int j = i;
+                
+        while (j == i) 
+         {
+            timer++;
+            p[i].rem_time--;
+            j = min(p, n, timer);
+        }
+        printf("%d -> (%d %d)\n", p[i].pid, start, timer);
+        
+        if (p[i].rem_time == 0) 
+        {
+            TAT += (timer - p[i].arrival_time);
+            WAT += (timer - p[i].arrival_time - p[i].burst_time);
+            done++;
+        }
+    }
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Turnaround Time = %0.2f ms \n", TAT);
+    printf("Waiting Time = %0.2f ms\n\n", WAT);
+}
+
+void RR() {
+    Process* p = Entry();
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+    
+    int q;
+    printf("Enter time slice: ");
+    scanf("%d", &q);
+    
+    int timer = 0;
+    int done = 0;
+    float TAT = 0;
+    float WAT = 0;
+    
+    while (done != n) 
+   {
+        for (int i = 0; i < n; i++) 
+         {
+            int count = q;
+            int start = timer;
+            
+            while (p[i].rem_time > 0 && p[i].arrival_time <= timer && count > 0) 
+            {
+                timer++;
+                p[i].rem_time--;
+                count--;
+            }
+            
+            printf("%d -> (%d %d)\n", p[i].pid, start, timer);
+                
+                if (p[i].rem_time == 0) 
+                {
+                    TAT += (timer - p[i].arrival_time);
+                    WAT += (timer - p[i].arrival_time - p[i].burst_time);
+                    done++;
+                }
+        }
+    }
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Turnaround Time = %0.2f ms \n", TAT);
+    printf("Waiting Time = %0.2f ms\n\n", WAT);
+}
+
+int comparator(const void* p, const void* q) {
+    Process* p1 = (Process*)p;
+    Process* p2 = (Process*)q;
+    
+    // Compare by arrival time first, then by priority if arrival times are equal
+    if (p1->arrival_time == p2->arrival_time)
+        return p1->priority - p2->priority; // Lower number has higher priority
+    else
+        return p1->arrival_time - p2->arrival_time;
+}
+
+void Prior() {
+    Process* p = Entry();
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+    
+    qsort(p, n, sizeof(Process), comparator); // Sort by arrival time and priority
+    int timer = 0;
+    float TAT = 0;
+    float WAT = 0;
+    
+    for (int i = 0; i < n; i++) {
+        WAT += (timer - p[i].arrival_time);
+        printf("%d -> (%d %d)\n", p[i].pid, timer, timer + p[i].burst_time);
+        timer += p[i].burst_time;
+        TAT += (timer - p[i].arrival_time);
+    }
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Turnaround Time = %0.2f ms \n", TAT);
+    printf("Waiting Time = %0.2f ms\n\n", WAT);
+}
+
+int main() {
+    int ch;
+    while (1) {
+        printf("1. Preemptive SJF\n");
+        printf("2. Round Robin Scheduling\n");
+        printf("3. Priority Scheduling\n");
+        scanf("%d", &ch);
+        
+        switch (ch) {
+            case 1:
+                SJF();
+                break;
+            case 2:
+                RR();
+                break;
+            case 3:
+                Prior();
+                break;
+            default:
+                printf("Invalid choice! Try again.\n");
+        }
+    }
+}
+
+1. Preemptive SJF
+2. Round Robin Scheduling
+3. Priority Scheduling
+1
+No. of Processes: 3
+Enter PID, Arrival Time, Burst Time, Priority
+Process 1 : 1 0 5 2
+Process 2 : 2 1 3 1
+Process 3 : 3 2 8 3
+
+1 -> (0 5)
+2 -> (5 8)
+3 -> (8 16)
+Turnaround Time = 8.67 ms 
+Waiting Time = 3.33 ms
+
+2
+No. of Processes: 3
+Enter PID, Arrival Time, Burst Time, Priority
+Process 1 : 1 0 5 2
+Process 2 : 2 1 3 1
+Process 3 : 3 2 8 3
+Enter time slice: 2
+
+1 -> (0 2)
+2 -> (2 3)
+3 -> (3 5)
+1 -> (5 6)
+2 -> (6 8)
+3 -> (8 10)
+1 -> (10 12)
+3 -> (12 14)
+Turnaround Time = 9.33 ms 
+Waiting Time = 4.00 ms
+
+3
+No. of Processes: 3
+Enter PID, Arrival Time, Burst Time, Priority
+Process 1 : 1 0 5 2
+Process 2 : 2 1 3 1
+Process 3 : 3 2 8 3
+
+2 -> (1 4)
+1 -> (4 9)
+3 -> (9 17)
+Turnaround Time = 7.33 ms 
+Waiting Time = 2.00 ms
+
+.........................................................................
+
+Lab 7
+
+1)
+#include <pthread.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <semaphore.h>
+
+int capacity; // Maximum size of the buffer
+int *queue;   // Buffer for produced items
+int max;      // Number of items to produce/consume
+
+// Semaphores for managing full and empty states of the buffer
+sem_t full, empty;
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER; // Mutex for mutual exclusion
+
+// Producer function
+void *producer(void *param) {
+    int in = 0; // Index for inserting into the queue
+    for (int i = 0; i < max; i++) {
+        sem_wait(&empty);                      // Wait for an empty slot in the buffer
+        pthread_mutex_lock(&mutex);            // Lock mutex for mutual exclusion
+        queue[in] = i + 1;                     // Produce an item
+        in = (in + 1) % capacity;             // Update index for circular buffer
+        printf("Produced %d\n", i + 1);
+        pthread_mutex_unlock(&mutex);         // Unlock mutex
+        sem_post(&full);                     // Signal that a new item has been produced
+    }
+}
+
+// Consumer function
+void *consumer(void *param) {
+    int out = 0; // Index for removing from the queue
+    for (int i = 0; i < max; i++) {
+        sem_wait(&full);                       // Wait for an available item in the buffer
+        pthread_mutex_lock(&mutex);            // Lock mutex for mutual exclusion
+        printf("Consumed %i\n", queue[out]);   // Consume an item
+        out = (out + 1) % capacity;            // Update index for circular buffer
+        pthread_mutex_unlock(&mutex);          // Unlock mutex
+        sem_post(&empty);                      // Signal that a slot in the buffer is now empty
+    }
+}
+
+// Main function
+int main() {
+    printf("Enter the size of the buffer: ");
+    scanf("%d", &capacity);
+    printf("Enter the number of items to produce: ");
+    scanf("%d", &max);
+
+    queue = malloc(capacity * sizeof(int)); // Allocate memory for the buffer
+
+    pthread_t threads[2]; // Array to hold thread identifiers
+
+    sem_init(&full, 0, 0); // Initialize full semaphore to 0
+    sem_init(&empty, 0, capacity); // Initialize empty semaphore to capacity
+
+    pthread_create(&threads[0], NULL, producer, NULL); // Create producer thread
+    pthread_create(&threads[1], NULL, consumer, NULL); // Create consumer thread
+
+    pthread_join(threads[0], NULL); // Wait for producer thread to finish
+    pthread_join(threads[1], NULL); // Wait for consumer thread to finish
+
+    sem_destroy(&full); // Destroy full semaphore
+    sem_destroy(&empty); // Destroy empty semaphore
+
+    free(queue); // Free allocated memory for the queue
+    return 0; // Exit program
+}
+
+// Compile using: gcc -o producer_consumer producer_consumer.c -lpthread -lrt
+
+Enter the size of the buffer: 5
+Enter the number of items to produce: 10
+
+Produced 1
+Produced 2
+Produced 3
+Produced 4
+Consumed 1
+Consumed 2
+Produced 5
+Consumed 3
+Consumed 4
+Produced 6
+Consumed 5
+Produced 7
+Produced 8
+Consumed 6
+Produced 9
+Consumed 7
+Produced 10
+Consumed 8
+Consumed 9
+Consumed 10
+.........................................................................
+
+2)
+#include <stdio.h>
+#include <unistd.h>
+#include <semaphore.h>
+#include <pthread.h>
+
+// Semaphores for controlling access to the database and mutual exclusion
+sem_t db, mutex;
+int readcount = 0;  // Counter for the number of active readers
+
+// Writer function
+void *writer(void *arg) {
+    int writer_id = (int)arg;  // Get writer ID
+    sem_wait(&db);  // Wait for access to the database
+    printf("W - Writer %d is operating\n", writer_id);
+    sleep(1);  // Simulate writing operation
+    printf("W - Writer %d done\n", writer_id);
+    sem_post(&db);  // Release access to the database
+    return NULL;
+}
+
+// Reader function
+void *reader(void *arg) {
+    int reader_id = (int)arg;  // Get reader ID
+    sem_wait(&mutex);  // Enter critical section to update readcount
+    readcount++;
+    if (readcount == 1) {  // If this is the first reader
+        sem_wait(&db);  // Wait for access to the database
+    }
+    sem_post(&mutex);  // Leave critical section
+
+    // Reading operation
+    printf("R - Reader %d is operating\n", reader_id);
+    sleep(1);  // Simulate reading operation
+
+    sem_wait(&mutex);  // Enter critical section to update readcount
+    readcount--;
+    if (readcount == 0) {  // If this is the last reader
+        sem_post(&db);  // Release access to the database
+    }
+    printf("R - Reader %d done\n", reader_id);
+    sem_post(&mutex);  // Leave critical section
+    return NULL;
+}
+
+int main() {
+    int r, w;  // Number of readers and writers
+    printf("Enter the number of readers and writers: ");
+    scanf("%d %d", &r, &w);
+
+    pthread_t readers[r], writers[w];         // Thread arrays for readers and writers
+    sem_init(&mutex, 0, 1);                   // Initialize mutex semaphore for mutual exclusion
+    sem_init(&db, 0, 1);                      // Initialize db semaphore for database access
+
+    // Create reader and writer threads
+    for (int i = 0; i < r; i++) {
+        pthread_create(&readers[i], NULL, reader, (void *)(i + 1));  // Create readers
+    }
+    for (int i = 0; i < w; i++) {
+        pthread_create(&writers[i], NULL, writer, (void *)(i + 1));  // Create writers
+    }
+
+    // Wait for all reader threads to finish
+    for (int i = 0; i < r; i++) {
+        pthread_join(readers[i], NULL);
+    }
+    // Wait for all writer threads to finish
+    for (int i = 0; i < w; i++) {
+        pthread_join(writers[i], NULL);
+    }
+
+    // Destroy semaphores
+    sem_destroy(&mutex);
+    sem_destroy(&db);
+    return 0;
+}
+
+// Compile using: gcc <filename>.c -lpthread -lrt -o <output_filename>
+
+Enter the number of readers and writers: 3 2
+R - Reader 1 is operating
+R - Reader 1 done
+R - Reader 2 is operating
+R - Reader 2 done
+W - Writer 1 is operating
+W - Writer 1 done
+R - Reader 3 is operating
+R - Reader 3 done
+W - Writer 2 is operating
+W - Writer 2 done
+.........................................................................
+
+Lab 8
+
+1)
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    int m, n;  // m = number of processes, n = number of resources
+    printf("Enter the number of processes (m): ");
+    scanf("%d", &m);
+    printf("Enter the number of resources (n): ");
+    scanf("%d", &n);
+
+    // Declare matrices and vectors
+    int allocation[m][n], max[m][n], need[m][n], available[n];
+    
+    // Input the Max matrix
+    printf("Enter the Max matrix:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &max[i][j]);
+        }
+    }
+    
+    // Input the Allocation matrix and calculate Need matrix
+    printf("Enter the Allocation matrix:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &allocation[i][j]);
+            need[i][j] = max[i][j] - allocation[i][j];  // Calculate Need
+        }
+    }
+    
+    // Input the Available vector
+    printf("Enter the Available vector:\n");
+    for (int j = 0; j < n; j++) {
+        scanf("%d", &available[j]);
+    }
+    
+    // Safety Algorithm
+    int work[n];
+    memcpy(work, available, sizeof(available));  // Copy available to work
+    int finish[m];  // Track process completion
+    for (int i = 0; i < m; i++) {
+        finish[i] = 0;  // Initialize finish
+    }
+
+    int safeSequence[m];  // To store safe sequence
+    int ind = 0;  // Index for safe sequence
+
+    while (1) 
+    {
+        int found = 0;                          // Flag to check if a process is found
+        for (int i = 0; i < m; i++)
+        {
+            if (finish[i] == 0) 
+            {                                  // If process is not finished
+                int success = 1;              // Flag for checking if it can run
+                                              // Check if resources can satisfy the needs of process i
+                for (int j = 0; j < n; j++) 
+               {
+                    if (need[i][j] > work[j]) 
+                    {
+                        success = 0;
+                        break;                 // If any need is greater than available, break
+                    }
+                }
+                                              // If process can run, update the work and finish status
+                if (success) 
+                {
+                    for (int k = 0; k < n; k++) 
+                    {
+                        work[k] += allocation[i][k];  // Simulate process completion
+                    }
+                    finish[i] = 1;  // Mark process as finished
+                    safeSequence[ind++] = i;  // Add to safe sequence
+                    found = 1;  // Mark that a process was found
+                }
+            }
+        }
+        // If no process was found, break
+        if (!found) 
+        {
+            break;
+        }
+    }
+
+    // Check if all processes finished
+    int isSafe = 1;
+    for (int i = 0; i < m; i++) {
+        if (finish[i] == 0) {
+            isSafe = 0;  // If any process is not finished, not safe
+            break;
+        }
+    }
+
+    // Output the result
+    if (isSafe) {
+        printf("The system is in a safe state.\n");
+        printf("Safe Sequence: ");
+        for (int i = 0; i < m; i++) {
+            printf("%d ", safeSequence[i]);
+        }
+        printf("\n");
+    } else {
+        printf("The system is not in a safe state.\n");
+    }
+
+    return 0;
+}
+
+Enter the number of processes (m): 5
+Enter the number of resources (n): 3
+Enter the Max matrix:
+7 5 3
+3 2 2
+9 0 2
+2 2 2
+4 3 3
+Enter the Allocation matrix:
+0 1 0
+2 0 0
+3 0 2
+2 1 1
+0 0 2
+Enter the Available vector:
+3 3 2
+The system is in a safe state.
+Safe Sequence: 1 3 4 0 2 
+
+
+.........................................................................
+
+void Prior() {
+    Process* p = Entry();
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+
+    int timer = 0;
+    float TAT = 0;
+    float WAT = 0;
+    int done = 0;
+
+    while (done != n) {
+        // Find the process with the highest priority (smallest priority number)
+        int min_priority = 9999;
+        int current = -1;
+
+        for (int i = 0; i < n; i++) 
+       {
+            if (p[i].arrival_time <= timer && p[i].rem_time > 0 && p[i].priority < min_priority) 
+            {
+                min_priority = p[i].priority;
+                current = i;
+            }
+        }
+
+        if (current != -1) {
+            // Run the current process for 1 unit of time
+            p[current].rem_time--;
+            timer++;
+
+            // If the process finishes, calculate TAT and WAT
+            if (p[current].rem_time == 0) {
+                TAT += (timer - p[current].arrival_time);
+                WAT += (timer - p[current].arrival_time - p[current].burst_time);
+                printf("%d -> (%d %d)\n", p[current].pid, timer - p[current].burst_time, timer);
+                done++;
+            }
+        } else {
+            // If no process is ready to run, increment the timer
+            timer++;
+        }
+    }
+
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Turnaround Time = %0.2f ms \n", TAT);
+    printf("Waiting Time = %0.2f ms\n\n", WAT);
+}
+........................................................................
+
+void FCFS() {
+    Process* p = Entry();
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+    
+    int timer = 0;
+    float TAT = 0;
+    float WAT = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (p[i].arrival_time > timer)
+            timer = p[i].arrival_time;
+        
+        WAT += (timer - p[i].arrival_time);  // Waiting time = current time - arrival time
+        printf("%d -> (%d %d)\n", p[i].pid, timer, timer + p[i].burst_time);
+        timer += p[i].burst_time;  // Process execution
+        TAT += (timer - p[i].arrival_time);  // Turnaround time = finish time - arrival time
+    }
+
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Turnaround Time = %0.2f ms \n", TAT);
+    printf("Waiting Time = %0.2f ms\n\n", WAT);
+}
+
+.......................................................................
+
+void NonPreemptiveSJF() {
+    Process* p = Entry();  // Get the processes entered by the user
+    int n = 0;
+    while (p[n].pid != -1)
+        n++;
+
+    int timer = 0;
+    float TAT = 0;  // Total Turnaround Time
+    float WAT = 0;  // Total Waiting Time
+    int done = 0;
+    int visited[n];  // To track visited processes
+
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;  // Mark all processes as unvisited
+    }
+
+    while (done != n) {
+        int min_burst = 9999;
+        int current = -1;
+
+        // Find the process with the shortest burst time that has arrived and hasn't been visited yet
+        for (int i = 0; i < n; i++) {
+            if (p[i].arrival_time <= timer && !visited[i] && p[i].burst_time < min_burst) {
+                min_burst = p[i].burst_time;
+                current = i;
+            }
+        }
+
+        if (current != -1) {
+            visited[current] = 1;  // Mark the process as visited
+            int start = timer;      // Start time of the process
+            timer += p[current].burst_time;  // Process runs to completion
+
+            // Calculate Turnaround Time (completion time - arrival time)
+            TAT += (timer - p[current].arrival_time);
+            // Calculate Waiting Time (start time - arrival time)
+            WAT += (start - p[current].arrival_time);
+
+            printf("%d -> (%d %d)\n", p[current].pid, start, timer);
+            done++;
+        } else {
+            // If no process has arrived yet, increment the timer
+            timer++;
+        }
+    }
+
+    // Calculate and print average Turnaround Time and Waiting Time
+    TAT = TAT / n;
+    WAT = WAT / n;
+    printf("Average Turnaround Time = %0.2f ms\n", TAT);
+    printf("Average Waiting Time = %0.2f ms\n\n", WAT);
+}
+
+.........................................................................
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <unistd.h>
+
+#define N 5  // Number of philosophers
+
+// State of each philosopher
+enum { THINKING, HUNGRY, EATING } state[N];
+
+// Mutex and condition variables for each philosopher
+pthread_mutex_t mutex;
+pthread_cond_t self[N];
+
+// Number of iterations
+int iterations;
+
+// Function prototypes
+void* philosopher(void* num);
+void pickup(int i);
+void putdown(int i);
+void test(int i);
+void think(int i);
+void eat(int i);
+
+int main() {
+    pthread_t thread_id[N];
+    int philosopher_ids[N];
+
+    // Get the number of iterations from the user
+    printf("Enter the number of iterations: ");
+    scanf("%d", &iterations);
+
+    // Initialize mutex and condition variables
+    pthread_mutex_init(&mutex, NULL);
+
+    for (int i = 0; i < N; i++) {
+        philosopher_ids[i] = i;
+    }
+
+    for (int i = 0; i < N; i++) {
+        pthread_cond_init(&self[i], NULL);
+     }
+
+    // Create philosopher threads
+    for (int i = 0; i < N; i++) {
+        pthread_create(&thread_id[i], NULL, philosopher, &philosopher_ids[i]);
+    }
+
+    // Join philosopher threads
+    for (int i = 0; i < N; i++) {
+        pthread_join(thread_id[i], NULL);
+    }
+
+    // Destroy mutex and condition variables
+    pthread_mutex_destroy(&mutex);
+
+    for (int i = 0; i < N; i++) {
+        pthread_cond_destroy(&self[i]);
+    }
+
+    return 0;
+}
+
+// Function to simulate philosopher's lifecycle
+void* philosopher(void* num) {
+    int i = *(int*)num;
+    int count = 0;
+
+    while (count < iterations) {  // Loop for the given number of iterations
+        think(i);         // Philosopher is thinking
+        pickup(i);        // Try to pick up chopsticks
+        eat(i);           // Philosopher is eating
+        putdown(i);       // Philosopher puts down chopsticks
+        count++;          // Increment iteration counter
+    }
+
+    return NULL;
+}
+
+// Function to simulate thinking
+void think(int i) {
+    printf("Philosopher %d is thinking.\n", i);
+    sleep(rand() % 2 + 1);  // Sleep for 1-2 seconds
+}
+
+// Function to simulate eating
+void eat(int i) {
+    printf("Philosopher %d is eating.\n", i);
+    sleep(rand() % 2 + 1);  // Sleep for 1-2 seconds
+}
+
+// Function for a philosopher to pick up chopsticks
+void pickup(int i) {
+    pthread_mutex_lock(&mutex);  // Lock the mutex
+    state[i] = HUNGRY;  // Philosopher i is hungry
+    test(i);            // Test if the philosopher can eat
+    if (state[i] != EATING) {
+        pthread_cond_wait(&self[i], &mutex);  // Wait if they can't eat
+    }
+    pthread_mutex_unlock(&mutex);  // Unlock the mutex
+}
+
+// Function for a philosopher to put down chopsticks
+void putdown(int i) {
+    pthread_mutex_lock(&mutex);  // Lock the mutex
+    state[i] = THINKING;  // Philosopher i is done eating
+    // Test if the left and right neighbors can now eat
+    test((i + 4) % N);  // Test left neighbor
+    test((i + 1) % N);  // Test right neighbor
+    pthread_mutex_unlock(&mutex);  // Unlock the mutex
+}
+
+// Function to test if philosopher i can start eating
+void test(int i) {
+    if (state[(i + 4) % N] != EATING &&  // Left neighbor is not eating
+        state[i] == HUNGRY &&            // Philosopher i is hungry
+        state[(i + 1) % N] != EATING) {  // Right neighbor is not eating
+        state[i] = EATING;               // Philosopher i starts eating
+        pthread_cond_signal(&self[i]);    // Signal the philosopher to eat
+    }
+}
+.........................................................................
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_PROCESSES 100
+#define MAX_RESOURCES 100
+
+void detectDeadlock(int m, int n, int allocation[MAX_PROCESSES][MAX_RESOURCES],
+                    int max[MAX_PROCESSES][MAX_RESOURCES], int available[MAX_RESOURCES]) {
+    int work[MAX_RESOURCES];
+    memcpy(work, available, sizeof(int) * n); // Work = Available
+    int finish[MAX_PROCESSES]; // Track process completion
+
+    // Initialize Finish array
+    for (int i = 0; i < m; i++) 
+    {
+        finish[i] = (allocation[i][0] == 0) ? 1 : 0; // If allocation is 0, process is finished
+    }
+
+    int deadlocked = 1; // Assume all are deadlocked
+    while (1) {
+        int found = 0; // Flag to check if a process can finish
+        for (int i = 0; i < m; i++) {
+            if (finish[i] == 0) { // Process i is not finished
+                int canFinish = 1; // Assume it can finish
+                // Check if the process's request can be satisfied
+                for (int j = 0; j < n; j++) {
+                    if ((max[i][j] - allocation[i][j]) > work[j]) {
+                        canFinish = 0; // If any need is greater than work, it cannot finish
+                        break;
+                    }
+                }
+                // If the process can finish
+                if (canFinish) {
+                    for (int k = 0; k < n; k++) {
+                        work[k] += allocation[i][k]; // Simulate process completion
+                    }
+                    finish[i] = 1; // Mark process as finished
+                    found = 1; // A process was found
+                }
+            }
+        }
+        // If no process was found that can finish
+        if (!found) {
+            break; // Exit the loop
+        }
+    }
+
+    // Check for deadlocked processes
+    for (int i = 0; i < m; i++) {
+        if (finish[i] == 0) { // Process is deadlocked
+            printf("Deadlocked process: P%d\n", i);
+            deadlocked = 0; // Found a deadlocked process
+        }
+    }
+
+    if (deadlocked) {
+        printf("No processes are deadlocked.\n");
+    }
+}
+
+int main() {
+    int m, n; // m = number of processes, n = number of resources
+    printf("Enter the number of processes (m): ");
+    scanf("%d", &m);
+    printf("Enter the number of resources (n): ");
+    scanf("%d", &n);
+
+    // Declare matrices and vectors
+    int allocation[MAX_PROCESSES][MAX_RESOURCES];
+    int max[MAX_PROCESSES][MAX_RESOURCES];
+    int available[MAX_RESOURCES];
+
+    // Input the Max matrix
+    printf("Enter the Max matrix:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &max[i][j]);
+        }
+    }
+
+    // Input the Allocation matrix
+    printf("Enter the Allocation matrix:\n");
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
+            scanf("%d", &allocation[i][j]);
+        }
+    }
+
+    // Input the Available vector
+    printf("Enter the Available vector:\n");
+    for (int j = 0; j < n; j++) {
+        scanf("%d", &available[j]);
+    }
+
+    // Detect deadlock
+    detectDeadlock(m, n, allocation, max, available);
+
+    return 0;
+}
+

@@ -1,0 +1,749 @@
+Lab 9
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef long long ll;
+
+void bestFit(ll *blocks, int m, ll *processes, int n) {
+    ll *alloc = (ll *)malloc(n * sizeof(ll));
+    for (int i = 0; i < n; i++) 
+    {
+        alloc[i] = -1; // Initially, no block is allocated
+    }
+
+    for (int i = 0; i < n; i++) 
+   {
+        int best = -1;
+        for (int j = 0; j < m; j++) 
+        {
+            if (blocks[j] >= processes[i]) 
+            {
+                if (best == -1 || blocks[best] > blocks[j]) 
+                {
+                    best = j;
+                }
+            }
+        }
+        if (best != -1) 
+        {
+            alloc[i] = best;
+            blocks[best] -= processes[i]; // Reduce available block size
+        }
+    }
+
+    printf("\nBest Fit Allocation:\nProcess No.\tProcess Size\tBlock no.\n");
+    for (int i = 0; i < n; i++) {
+        printf("   %d\t\t%lld\t\t", i + 1, processes[i]);
+        if (alloc[i] != -1)
+            printf("%d", alloc[i] + 1);
+        else
+            printf("Not Allocated");
+        printf("\n");
+    }
+
+    free(alloc); // Free allocated memory
+}
+
+void firstFit(ll *blocks, int m, ll *processes, int n) {
+    ll *alloc = (ll *)malloc(n * sizeof(ll));
+    for (int i = 0; i < n; i++) {
+        alloc[i] = -1; // Initially, no block is allocated
+    }
+
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            if (blocks[j] >= processes[i]) {
+                alloc[i] = j;
+                blocks[j] -= processes[i]; // Reduce available block size
+                break; // Stop searching after finding the first fit
+            }
+        }
+    }
+
+    printf("\nFirst Fit Allocation:\nProcess No.\tProcess Size\tBlock no.\n");
+    for (int i = 0; i < n; i++) {
+        printf(" %d\t\t%lld\t\t", i + 1, processes[i]);
+        if (alloc[i] != -1)
+            printf("%d", alloc[i] + 1);
+        else
+            printf("Not Allocated");
+        printf("\n");
+    }
+
+    free(alloc); // Free allocated memory
+}
+
+int main() {
+    ll m, n;
+   
+    printf("Enter number of blocks: ");
+    scanf("%lld", &n);
+   
+    printf("Enter number of processes: ");
+    scanf("%lld", &m);
+
+    ll *blocks = (ll *)malloc(n * sizeof(ll));
+    ll *processes = (ll *)malloc(m * sizeof(ll));
+
+    printf("Enter sizes of blocks:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%lld", &blocks[i]);
+    }
+
+    printf("Enter sizes of processes:\n");
+    for (int i = 0; i < m; i++) {
+        scanf("%lld", &processes[i]);
+    }
+
+    // Make a copy of original blocks for First Fit
+    ll *originalBlocks = (ll *)malloc(n * sizeof(ll));
+    for (int i = 0; i < n; i++) {
+        originalBlocks[i] = blocks[i]; // Store original sizes
+    }
+
+    bestFit(blocks, m, processes, n);
+   
+    firstFit(originalBlocks, m, processes, n);
+
+    // Free dynamically allocated memory
+    free(blocks);
+    free(processes);
+    free(originalBlocks);
+
+    return 0;
+}
+
+
+Worst Fit
+
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef long long ll;
+
+void worstFit(ll *blocks, int m, ll *processes, int n) {
+    ll *alloc = (ll *)malloc(n * sizeof(ll));
+    for (int i = 0; i < n; i++) {
+        alloc[i] = -1; // Initially, no block is allocated
+    }
+
+    for (int i = 0; i < n; i++) {
+        int worst = -1;
+        for (int j = 0; j < m; j++) {
+            if (blocks[j] >= processes[i]) {
+                if (worst == -1 || blocks[worst] < blocks[j]) {
+                    worst = j; // Find the largest suitable block
+                }
+            }
+        }
+        if (worst != -1) {
+            alloc[i] = worst;
+            blocks[worst] -= processes[i]; // Reduce available block size
+        }
+    }
+
+    printf("\nWorst Fit Allocation:\nProcess No.\tProcess Size\tBlock no.\n");
+    for (int i = 0; i < n; i++) {
+        printf("   %d\t\t%lld\t\t", i + 1, processes[i]);
+        if (alloc[i] != -1)
+            printf("%d", alloc[i] + 1);
+        else
+            printf("Not Allocated");
+        printf("\n");
+    }
+
+    free(alloc); // Free allocated memory
+}
+
+int main() {
+    ll m, n;
+
+    printf("Enter number of blocks: ");
+    scanf("%lld", &n);
+
+    printf("Enter number of processes: ");
+    scanf("%lld", &m);
+
+    ll *blocks = (ll *)malloc(n * sizeof(ll));
+    ll *processes = (ll *)malloc(m * sizeof(ll));
+
+    printf("Enter sizes of blocks:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%lld", &blocks[i]);
+    }
+
+    printf("Enter sizes of processes:\n");
+    for (int i = 0; i < m; i++) {
+        scanf("%lld", &processes[i]);
+    }
+
+    // Make a copy of original blocks for Worst Fit
+    ll *originalBlocks = (ll *)malloc(n * sizeof(ll));
+    for (int i = 0; i < n; i++) {
+        originalBlocks[i] = blocks[i]; // Store original sizes
+    }
+
+    worstFit(blocks, n, processes, m);
+
+    // Free dynamically allocated memory
+    free(blocks);
+    free(processes);
+    free(originalBlocks);
+
+    return 0;
+}
+
+
+.........................................................................
+
+Lab 10
+
+#include <stdio.h>
+#include <stdlib.h>
+
+void fifoPageReplacement(int pages[], int numPages, int frameSize) {
+    int frames[frameSize];
+    int pageFaults = 0, index = 0;
+
+    // Initialize frames to -1 (indicating empty)
+    for (int i = 0; i < frameSize; i++) {
+        frames[i] = -1;
+    }
+
+    printf("\nFIFO Page Replacement:\n");
+    for (int i = 0; i < numPages; i++) {
+        int page = pages[i];
+        int found = 0;
+
+        // Check if page is already in frames
+        for (int j = 0; j < frameSize; j++) {
+            if (frames[j] == page) {
+                found = 1;
+                break;
+            }
+        }
+
+        // If not found, replace the page at index position (FIFO order)
+        if (!found) {
+            frames[index] = page;
+            index = (index + 1) % frameSize;  // Move index in circular manner
+            pageFaults++;
+
+            // Display current frame contents
+            printf("Page %d -> Frames: ", page);
+            for (int k = 0; k < frameSize; k++) {
+                if (frames[k] != -1) printf("%d ", frames[k]);
+                else printf("- ");
+            }
+            printf("\n");
+        }
+    }
+    printf("Total FIFO Page Faults: %d\n", pageFaults);
+}
+
+void lruPageReplacement(int pages[], int numPages, int frameSize) {
+    int frames[frameSize];
+    int pageFaults = 0;
+
+    // Initialize frames to -1 (indicating empty)
+    for (int i = 0; i < frameSize; i++) {
+        frames[i] = -1;
+    }
+
+    printf("\nLRU Page Replacement:\n");
+    for (int i = 0; i < numPages; i++) {
+        int page = pages[i];
+        int found = 0;
+
+        // Check if page is already in frames
+        for (int j = 0; j < frameSize; j++) {
+            if (frames[j] == page) {
+                found = 1;
+
+                // Move page to the end (most recent position) by shifting elements
+                int temp = frames[j];
+                for (int k = j; k < frameSize - 1; k++) {
+                    frames[k] = frames[k + 1];
+                }
+                frames[frameSize - 1] = temp;
+                break;
+            }
+        }
+
+        // If not found, replace the least recently used page
+        if (!found) {
+            // Shift all elements to the left and insert the new page at the end
+            for (int j = 0; j < frameSize - 1; j++) {
+                frames[j] = frames[j + 1];
+            }
+            frames[frameSize - 1] = page;
+            pageFaults++;
+
+            // Display current frame contents
+            printf("Page %d -> Frames: ", page);
+            for (int k = 0; k < frameSize; k++) {
+                if (frames[k] != -1) printf("%d ", frames[k]);
+                else printf("- ");
+            }
+            printf("\n");
+        }
+    }
+    printf("Total LRU Page Faults: %d\n", pageFaults);
+}
+
+int main() {
+    char input[100];
+    int frameSize;
+
+    // Get the page reference string and frame size from the user
+    printf("Enter the page reference string (e.g., 1 2 3 2 1): ");
+    fgets(input, sizeof(input), stdin);
+    printf("Enter the number of frames: ");
+    scanf("%d", &frameSize);
+
+    // Convert input string to an array of page requests
+    int pages[100];
+    int numPages = 0;
+    char *token = strtok(input, " ");
+    while (token) {
+        pages[numPages++] = atoi(token);
+        token = strtok(NULL, " ");
+    }
+
+    // Run FIFO and LRU page replacement
+    fifoPageReplacement(pages, numPages, frameSize);
+    lruPageReplacement(pages, numPages, frameSize);
+
+    return 0;
+}
+
+
+LRU
+
+#include <stdio.h>
+
+int findLRU(int time[], int n) {
+    int min = time[0], pos = 0;
+    for (int i = 1; i < n; i++) {
+        if (time[i] < min) {
+            min = time[i];
+            pos = i;
+        }
+    }
+    return pos;
+}
+
+void lruPageReplacement(int pages[], int numPages, int frameSize) {
+    int frames[frameSize], time[frameSize];
+    int fault = 0, counter = 0;
+
+    // Initialize frames and time arrays
+    for (int i = 0; i < frameSize; i++) {
+        frames[i] = -1;
+    }
+
+    printf("\nLRU Page Replacement:\n");
+    for (int i = 0; i < numPages; i++) {
+        int page = pages[i];
+        int found = 0;
+
+        // Check if page is already in frames
+        for (int j = 0; j < frameSize; j++) {
+            if (frames[j] == page) {
+                found = 1;
+                counter++;
+                time[j] = counter;  // Update time of reference
+                break;
+            }
+        }
+
+        // If page not found, replace using LRU
+        if (!found) {
+            int pos = -1;
+
+            // Find an empty frame if available
+            for (int j = 0; j < frameSize; j++) {
+                if (frames[j] == -1) {
+                    pos = j;
+                    break;
+                }
+            }
+
+            // If no empty frame, use LRU to replace
+            if (pos == -1) {
+                pos = findLRU(time, frameSize);
+            }
+
+            frames[pos] = page;
+            counter++;
+            time[pos] = counter;  // Set time of reference
+            fault++;
+
+            // Display current frame contents
+            printf("Page %d -> Frames: ", page);
+            for (int k = 0; k < frameSize; k++) {
+                if (frames[k] != -1) printf("%d ", frames[k]);
+                else printf("- ");
+            }
+            printf("\n");
+        }
+    }
+
+    printf("Total LRU Page Faults: %d\n", fault);
+}
+
+int main() {
+    int frameSize, numPages;
+    printf("Enter the number of frames: ");
+    scanf("%d", &frameSize);
+
+    printf("Enter the number of pages: ");
+    scanf("%d", &numPages);
+
+    int pages[numPages];
+    printf("Enter the page reference string (space-separated): ");
+    for (int i = 0; i < numPages; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    lruPageReplacement(pages, numPages, frameSize);
+
+    return 0;
+}
+
+Optimal
+
+#include <stdio.h>
+
+int findOptimal(int frames[], int ref_str[], int n, int index, int frame_count) {
+    int farthest = index;
+    int pos = -1;
+
+    for (int i = 0; i < frame_count; i++) {
+        int j;
+        for (j = index; j < n; j++) 
+        {
+            if (frames[i] == ref_str[j]) 
+            {
+                if (j > farthest) 
+                {
+                    farthest = j;
+                    pos = i;
+                }
+                break;
+            }
+        }
+        if (j == n) 
+        {  // If the frame is never referenced in the future
+            return i;
+        }
+    }
+    return (pos == -1) ? 0 : pos;
+}
+
+void optimalPageReplacement(int pages[], int numPages, int frameSize) {
+    int frames[frameSize];
+    int fault = 0;
+
+    // Initialize frames to -1 (indicating empty slots)
+    for (int i = 0; i < frameSize; i++) {
+        frames[i] = -1;
+    }
+
+    printf("\nOptimal Page Replacement:\n");
+    for (int i = 0; i < numPages; i++) {
+        int page = pages[i];
+        int found = 0;
+
+        // Check if the page is already in frames
+        for (int j = 0; j < frameSize; j++) {
+            if (frames[j] == page) {
+                found = 1;
+                break;
+            }
+        }
+
+        // If the page is not found, replace using Optimal
+        if (!found) {
+            int pos = -1;
+
+            // Find an empty frame if available
+            for (int j = 0; j < frameSize; j++) {
+                if (frames[j] == -1) {
+                    pos = j;
+                    break;
+                }
+            }
+
+            // If no empty frame, use Optimal replacement strategy
+            if (pos == -1) {
+                pos = findOptimal(frames, pages, numPages, i + 1, frameSize);
+            }
+
+            frames[pos] = page;
+            fault++;
+
+            // Display current frame contents
+            printf("Page %d -> Frames: ", page);
+            for (int k = 0; k < frameSize; k++) {
+                if (frames[k] != -1) printf("%d ", frames[k]);
+                else printf("- ");
+            }
+            printf("\n");
+        }
+    }
+
+    printf("Total Optimal Page Faults: %d\n", fault);
+}
+
+int main() {
+    int frameSize, numPages;
+    printf("Enter the number of frames: ");
+    scanf("%d", &frameSize);
+
+    printf("Enter the number of pages: ");
+    scanf("%d", &numPages);
+
+    int pages[numPages];
+    printf("Enter the page reference string (space-separated): ");
+    for (int i = 0; i < numPages; i++) {
+        scanf("%d", &pages[i]);
+    }
+
+    optimalPageReplacement(pages, numPages, frameSize);
+
+    return 0;
+}
+.........................................................................
+
+Lab 11
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+void sstf(int requests[], int n, int head) {
+    int completed[n]; // To track completed requests
+    for (int i = 0; i < n; i++) {
+        completed[i] = 0;
+    }
+    
+    int total_distance = 0;
+    int current_position = head;
+
+    
+        int min_distance = 10000; // A large number
+        int min = -1;
+
+        // Find the closest request
+        for (int i = 0; i < n; i++) 
+       {
+            if (!completed[i]) 
+            {
+                int distance = abs(requests[i] - current_position);
+                if (distance < min_distance) 
+                {
+                    min_distance = distance;
+                    min = i;
+                }
+            }
+        }
+
+        // Move to the closest request
+        total_distance += min_distance;
+        current_position = requests[min];
+        completed[min] = 1; // Mark as completed
+  
+    printf("Total Seek Distance (SSTF): %d\n", total_distance);
+}
+
+void scan(int requests[], int n, int head, int direction) {
+    int total_distance = 0;
+    int current_position = head;
+
+    // Sort the requests
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (requests[j] > requests[j + 1]) {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+
+    // Process in the specified direction
+    if (direction == 1) { // Moving right
+        for (int i = 0; i < n; i++) {
+            if (requests[i] >= current_position) {
+                total_distance += abs(current_position - requests[i]);
+                current_position = requests[i];
+            }
+        }
+        total_distance += abs(current_position - requests[n - 1]); // Go to end
+        current_position = requests[n - 1];
+
+        // Now go back to the start
+        for (int i = n - 1; i >= 0; i--) {
+            if (requests[i] < current_position) {
+                total_distance += abs(current_position - requests[i]);
+                current_position = requests[i];
+            }
+        }
+    } else { // Moving left
+        for (int i = n - 1; i >= 0; i--) {
+            if (requests[i] <= current_position) {
+                total_distance += abs(current_position - requests[i]);
+                current_position = requests[i];
+            }
+        }
+        total_distance += abs(current_position - requests[0]); // Go to start
+        current_position = requests[0];
+
+        // Now go back to the end
+        for (int i = 0; i < n; i++) {
+            if (requests[i] > current_position) {
+                total_distance += abs(current_position - requests[i]);
+                current_position = requests[i];
+            }
+        }
+    }
+
+    printf("Total Seek Distance (SCAN): %d\n", total_distance);
+}
+
+void cscan(int requests[], int n, int head) {
+    int total_distance = 0;
+    int current_position = head;
+
+    // Sort the requests
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (requests[j] > requests[j + 1]) {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+
+    // Move right and wrap around
+    for (int i = 0; i < n; i++) {
+        if (requests[i] >= current_position) {
+            total_distance += abs(current_position - requests[i]);
+            current_position = requests[i];
+        }
+    }
+
+    // Move to end of disk and wrap around to start
+    total_distance += abs(current_position - (200)); // Assuming disk size is 200
+    current_position = 0;
+
+    // Continue servicing from start to remaining requests
+    for (int i = 0; i < n; i++) {
+        if (requests[i] >= current_position) {
+            total_distance += abs(current_position - requests[i]);
+            current_position = requests[i];
+        }
+    }
+
+    printf("Total Seek Distance (C-SCAN): %d\n", total_distance);
+}
+
+void clook(int requests[], int n, int head) {
+    int total_distance = 0;
+    int current_position = head;
+
+    // Sort the requests
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            if (requests[j] > requests[j + 1]) {
+                int temp = requests[j];
+                requests[j] = requests[j + 1];
+                requests[j + 1] = temp;
+            }
+        }
+    }
+
+    // Move only to higher values from the head position
+    for (int i = 0; i < n; i++) {
+        if (requests[i] >= current_position) {
+            total_distance += abs(current_position - requests[i]);
+            current_position = requests[i];
+        }
+    }
+
+    // Wrap around to the lowest request after servicing higher ones
+    if (current_position != requests[n-1]) { 
+      total_distance += abs(current_position - requests[0]);
+      current_position = requests[0];
+
+      // Continue servicing remaining lower values
+      for (int i=1;i<n;i++){
+          total_distance+=abs(current_position-requests[i]);
+          current_position=requests[i];
+      }
+   }
+
+   printf("Total Seek Distance (C-LOOK): %d\n", total_distance);
+}
+
+int main() {
+    while(1) {
+        printf("\nDisk Scheduling Algorithms Simulation\n");
+        printf("1. Shortest Seek Time First (SSTF)\n");
+        printf("2. SCAN\n");
+        printf("3. C-SCAN\n");
+        printf("4. C-LOOK\n");
+        printf("5. Exit\n");
+        
+        int choice;
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        if(choice == 5)
+            break;
+
+        int n, head;
+        
+        printf("Enter number of disk request positions: ");
+        scanf("%d", &n);
+        
+        int *requests=(int*)malloc(n*sizeof(int));
+        
+        printf("Enter disk request positions:\n");
+        
+        for(int i=0;i<n;i++){
+            scanf("%d", &requests[i]);
+       }
+
+       printf("Enter initial head position: ");
+       scanf("%d", &head);
+
+       switch(choice) {
+           case 1:
+               sstf(requests, n, head);
+               break;
+           case 2:
+               printf("Enter direction of movement(1 for right, -1 for left): ");
+               int direction;
+               scanf("%d", &direction);
+               scan(requests, n, head, direction);
+               break;
+           case 3:
+               cscan(requests, n, head);
+               break;
+           case 4:
+               clook(requests, n, head);
+               break;
+           default:
+               printf("Invalid choice!\n");
+       }
+
+       free(requests); 
+   }
+
+   return 0;
+}
+
